@@ -36,11 +36,11 @@ while True:
         pyautogui.click(x, y)
         # pyautogui.click('capture.png')
 
-        pyautogui.write(cupons[random.randint(1, len(cupons)-1)])
+        pyautogui.write(cupons[random.randint(0, len(cupons)-1)])
 
         print(datetime.now(),'clicar no botao utilizar')
         pyautogui.click(a, b)
-        sleep(1)
+        sleep(0.8)
     else:
         # se o total mudar e por que consiguiu aplicar o cupon, clicar em fazer o pedido
         print(datetime.now(),'valor total mudou, fazer o pedido')
