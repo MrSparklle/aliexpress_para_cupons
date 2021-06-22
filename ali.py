@@ -1,51 +1,91 @@
 import pyautogui
-from pyautogui import locateOnScreen as LoS
+from pyautogui import locateOnScreen
 from time import sleep
-import numpy
 import random
-import winsound
+import beepy 
 from datetime import datetime
 
-cupons = numpy.array([
-    'superdicas20', 'chinacupon20', 'alitec20', 'importchina20', '2021ali20',
-    'sav20', 'alipay20', 'awintop20', 'cupomvalido20'
-])
+beepy.make_sound.beep(sound='ready')
+print('Iniciando captura dos campos e botões na tela. Após iniciado não oculte, mova ou feche a tela do browser até a finalização da compra.')
 
-# dados para emitir o beep quando aplicar o cumpom. 
-frequency = 2500  # Set Frequency To 2500 Hertz
-duration = 1000  # Set Duration To 1000 ms == 1 second
+with open('cupons.txt') as file:
+    cupons = [cupons.strip() for cupons in file]
+
+print('Cupons a serem utilizados: ',cupons)
+
+# cupons = numpy.array([
+#     'superdicas20', 'chinacupon20', 'alitec20', 'importchina20', '2021ali20',
+#     'sav20', 'alipay20', 'awintop20', 'cupomvalido20'
+# ])
 
 pyautogui.FAILSAFE = 0
 
-sleep(2)
-# capturando coordenadas do campo codigo promocional
-x, y = pyautogui.locateCenterOnScreen('codigo_promo.png')
+print(pyautogui.locateCenterOnScreen('codigo_promo.png'))
 
-# capturando coordenadas do campo botão utilizar
-a, b = pyautogui.locateCenterOnScreen('utilizar.png')
 
-c, d = pyautogui.locateCenterOnScreen('fazer.png')
+print('Capturando as coordenadas do campo "Código Promocional" na tela...')
+try:
+    # capturando coordenadas do campo codigo promocional
+    x, y = pyautogui.locateCenterOnScreen('codigo_promo.png')
+except:
+    print('ERRO: Não foi possível localizar o campo "Código Promocional" na tela.')
+    exit()
+
+print('Capturando as coordenadas do botão "Utilizar" na tela...')
+try:
+    a, b = pyautogui.locateCenterOnScreen('utilizar.png')
+except:
+    print('ERRO: Não foi possível localizar o botão "Utilizar" na tela.')
+    exit()
+
+
+print('Capturando as coordenadas do botão "Fazer Pedido" na tela...')
+try:    
+    c, d = pyautogui.locateCenterOnScreen('fazer.png')
+except:
+    print('ERRO: Não foi possível localizar o botão "Fazer Pedido" na tela.')
+    exit()
+
 
 while True:
+    print(datetime.now(),'Verificando se houve mudança no valor total, ou seja, se o cupom foi aplicado')
     # enquanto valor total não mudar
-    TOTAL = LoS('total.png', confidence=0.8)
-    print('Coordenadas do Total: ', TOTAL)
+    try: 
+        TOTAL = pyautogui.locateOnScreen('total.png')
+    except:
+        print('ERRO: Não foi possível localizar a informação do total do pedido na tela')
+        exit()
 
     if TOTAL:
-        print(datetime.now(),'clicar no campo do codigo promocional')
-        pyautogui.click(x, y)
-        # pyautogui.click('capture.png')
+        print(datetime.now(),'Valor do total não mudou, aplicar o cupom')
+        
+        print(datetime.now(),'Clicar no campo do codigo promocional')
+        try: 
+            pyautogui.click(x, y)
+        except:
+            print('ERRO: Não foi possível localizar o campo "Código Promocional" na tela')
+            exit()            
 
-        pyautogui.write(cupons[random.randint(0, len(cupons)-1)])
+        print(datetime.now(),'Sorteando um dos cupons a ser utilizado')
+        try:
+            pyautogui.write(cupons[random.randint(0, len(cupons)-1)])
+        except:
+            print('ERRO: Erro ao informar o cupom no campo código promocional')
+            exit()             
 
-        print(datetime.now(),'clicar no botao utilizar')
-        pyautogui.click(a, b)
+        print(datetime.now(),'Clicar no botao "Utilizar"')
+        try:
+            pyautogui.click(a, b)
+        except:
+            print('ERRO: Não foi possível localizar o botão "Utilizar" na tela')
+            exit()         
+        
         sleep(0.8)
     else:
         # se o total mudar e por que consiguiu aplicar o cupon, clicar em fazer o pedido
-        print(datetime.now(),'valor total mudou, fazer o pedido')
-        winsound.Beep(frequency, duration)
+        print(datetime.now(),'Valor total do pedid mudou, fazer o pedido')
+        beepy.make_sound.beep(sound='coin')
         pyautogui.click(c, d)
-        print(datetime.now(),'pedido finalizado')
-        winsound.Beep(frequency, duration)
+        print(datetime.now(),'Pedido finalizado')
+        beepy.make_sound.beep(sound='coin')
         break
