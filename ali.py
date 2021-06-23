@@ -19,6 +19,7 @@ print('Cupons a serem utilizados: ', cupons)
 # ])
 
 pyautogui.FAILSAFE = 0
+count = 1
 
 print(pyautogui.locateCenterOnScreen('codigo_promo.png'))
 
@@ -47,6 +48,8 @@ except:
     exit()
 
 while True:
+    print('---------------------- TENTATIVA: ' + count +
+          ' ----------------------')
     print(
         datetime.now(),
         'Verificando se houve mudança no valor total, ou seja, se o cupom foi aplicado'
@@ -88,6 +91,8 @@ while True:
             print(
                 'ERRO: Não foi possível localizar o botão "Utilizar" na tela')
             exit()
+
+        count += 1
 
         sleep(1.5)
     else:
